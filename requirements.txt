@@ -1,0 +1,10 @@
+pandas
+numpy
+streamlit
+scikit-learn
+prophet
+plotly
+seaborn
+matplotlib
+imblearn
+cmdstanpy # A dependency for the prophet library.
