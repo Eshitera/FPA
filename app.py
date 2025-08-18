@@ -10,7 +10,7 @@ import numpy as np
 # 1. STREAMLIT CONFIGURATION
 #    This must be the first Streamlit command in the script.
 # ==============================================================================
-st.set_page_config(layout="wide")
+st.set_page_config(layout="wide", page_title="Advanced FP&A Dashboard")
 
 # ==============================================================================
 # 2. DATA AND MODEL LOADING
@@ -47,35 +47,40 @@ except FileNotFoundError as e:
 
 
 # ==============================================================================
-# 3. HELPER FUNCTIONS FOR SCENARIO MODELING
+# 3. ADVANCED HELPER FUNCTIONS FOR SCENARIO MODELING
+#    This function has been upgraded for more realistic modeling.
 # ==============================================================================
 
 def run_scenario(df, marketing_spend_change, churn_rate_change):
     scenario_df = df.copy()
 
-    # Calculate the total marketing spend from individual channels
-    scenario_df['total_marketing_spend'] = scenario_df['social_media_spend'] + scenario_df['search_engine_spend'] + scenario_df['affiliate_spend']
+    # Calculate historical ratios for a more robust model
+    avg_cogs_ratio = (scenario_df['monthly_cogs'] / scenario_df['monthly_revenue']).mean()
+    avg_op_ex_ratio = (scenario_df['total_operating_expenses'] / scenario_df['monthly_revenue']).mean()
     
     # Apply changes to key drivers
-    scenario_df['total_marketing_spend'] = scenario_df['total_marketing_spend'] * (1 + marketing_spend_change / 100)
+    scenario_df['monthly_revenue_scenario'] = scenario_df['monthly_revenue'] * (1 - churn_rate_change / 100)
     
-    # A simplified way to model churn's impact on revenue.
-    # We assume revenue is impacted by churn.
-    scenario_df['monthly_revenue'] = scenario_df['monthly_revenue'] * (1 - churn_rate_change / 100)
-
-    # Re-calculate profitability metrics based on new revenue and spend
-    scenario_df['monthly_cogs'] = scenario_df['monthly_revenue'] * (scenario_df['monthly_cogs'] / scenario_df['monthly_revenue'].shift(1)).fillna(0.3)
-    scenario_df['gross_profit'] = scenario_df['monthly_revenue'] - scenario_df['monthly_cogs']
-    scenario_df['total_operating_expenses'] = scenario_df['total_operating_expenses'].replace(np.nan, 0)
-    scenario_df['net_income'] = (scenario_df['gross_profit'] - scenario_df['total_operating_expenses']) * 0.75
-
+    # Adjust marketing spend and re-calculate total marketing spend
+    scenario_df['total_marketing_spend_scenario'] = (scenario_df['social_media_spend'] + scenario_df['search_engine_spend'] + scenario_df['affiliate_spend']) * (1 + marketing_spend_change / 100)
+    
+    # Calculate profitability metrics based on new revenue and spend
+    scenario_df['monthly_cogs_scenario'] = scenario_df['monthly_revenue_scenario'] * avg_cogs_ratio
+    scenario_df['gross_profit_scenario'] = scenario_df['monthly_revenue_scenario'] - scenario_df['monthly_cogs_scenario']
+    
+    # Calculate new total operating expenses, assuming marketing spend is part of it
+    scenario_df['total_operating_expenses_scenario'] = scenario_df['monthly_revenue_scenario'] * avg_op_ex_ratio + (scenario_df['total_marketing_spend_scenario'] - (scenario_df['social_media_spend'] + scenario_df['search_engine_spend'] + scenario_df['affiliate_spend']))
+    
+    scenario_df['net_income_scenario'] = scenario_df['gross_profit_scenario'] - scenario_df['total_operating_expenses_scenario']
+    scenario_df['net_profit_margin_scenario'] = (scenario_df['net_income_scenario'] / scenario_df['monthly_revenue_scenario']) * 100
+    
     return scenario_df
 
 # ==============================================================================
 # 4. STREAMLIT APP LAYOUT AND CONTENT
 # ==============================================================================
 
-st.title("📊 Nova Essentials: Strategic FP&A Dashboard")
+st.title("📊 Nova Essentials: Advanced FP&A Dashboard")
 
 # Sidebar for Scenario Comparison Tool
 st.sidebar.header("Scenario Comparison Tool")
@@ -136,10 +141,32 @@ with col_forecast2:
     
     # Create comparison chart
     fig_comp = go.Figure()
-    fig_comp.add_trace(go.Scatter(x=baseline_scenario['month'], y=baseline_scenario['monthly_revenue'], mode='lines', name='Baseline'))
-    fig_comp.add_trace(go.Scatter(x=new_scenario['month'], y=new_scenario['monthly_revenue'], mode='lines', name='Scenario'))
-    fig_comp.update_layout(title='Scenario Impact on Monthly Revenue', height=450, width=650)
+    fig_comp.add_trace(go.Scatter(x=baseline_scenario['month'], y=baseline_scenario['net_income'], mode='lines', name='Baseline Net Income'))
+    fig_comp.add_trace(go.Scatter(x=new_scenario['month'], y=new_scenario['net_income_scenario'], mode='lines', name='Scenario Net Income'))
+    fig_comp.update_layout(title='Scenario Impact on Net Income', height=450, width=650, legend=dict(x=0, y=1.2, orientation='h'))
     st.plotly_chart(fig_comp)
+    
+    # Add a summary table to see the final numbers
+    st.subheader("Scenario Financial Summary")
+    final_baseline = baseline_scenario.iloc[-1]
+    final_scenario = new_scenario.iloc[-1]
+    
+    summary_data = {
+        "Metric": ["Monthly Revenue", "Gross Profit", "Net Income", "Net Profit Margin (%)"],
+        "Baseline": [
+            f"${final_baseline['monthly_revenue']:,.0f}",
+            f"${final_baseline['gross_profit']:,.0f}",
+            f"${final_baseline['net_income']:,.0f}",
+            f"{final_baseline['net_profit_margin']:.2f}%"
+        ],
+        "Scenario": [
+            f"${final_scenario['monthly_revenue_scenario']:,.0f}",
+            f"${final_scenario['gross_profit_scenario']:,.0f}",
+            f"${final_scenario['net_income_scenario']:,.0f}",
+            f"{final_scenario['net_profit_margin_scenario']:.2f}%"
+        ]
+    }
+    st.table(pd.DataFrame(summary_data))
 
 
 # --- Final Business Recommendations ---
