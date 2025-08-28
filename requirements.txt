@@ -212,6 +212,7 @@ patsy==0.5.3
 pexpect 
 pickleshare 
 pillow 
+pip==24.0
 pkce 
 pkginfo 
 platformdirs 
