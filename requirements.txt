@@ -7,7 +7,6 @@ aioitertools
 aiosignal 
 alabaster 
 altair 
-anaconda-anon-usage 
 anaconda-auth 
 anaconda-catalogs 
 anaconda-cli-base 
@@ -271,8 +270,6 @@ pytoolconfig
 pytz 
 pyviz_comms 
 pywavelets 
-pywin32==305.1
-pywin32-ctypes 
 pywinpty 
 PyYAML 
 pyzmq 
