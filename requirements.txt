@@ -1,3 +1,6 @@
+pip==25.*
+setuptools==70.*
+wheel==0.44.*
 aiobotocore 
 aiohttp 
 aioitertools 
@@ -48,7 +51,6 @@ chardet
 charset-normalizer 
 click 
 cloudpickle 
-clyent==1.2.2
 cmdstanpy==1.2.5
 colorama 
 colorcet 
@@ -59,7 +61,6 @@ conda-content-trust
 conda-libmamba-solver 
 conda-pack 
 conda-package-handling 
-conda-repo-cli==1.0.75
 conda-token 
 conda-verify==3.4.2
 conda_index 
@@ -182,6 +183,7 @@ multipledispatch
 munkres==1.1.4
 mypy 
 mypy-extensions 
+narwhals==2.2.0
 navigator-updater 
 nbclient 
 nbconvert 
@@ -212,11 +214,10 @@ patsy==0.5.3
 pexpect 
 pickleshare 
 pillow 
-pip==24.0
 pkce 
 pkginfo 
 platformdirs 
-plotly 
+plotly==6.3.0
 pluggy 
 ply==3.11
 prometheus-client 
@@ -284,8 +285,9 @@ queuelib
 readchar 
 referencing 
 regex 
-requests 
+requests==2.31.0
 requests-file 
+requests-mock==1.12.1
 requests-toolbelt 
 rfc3339-validator 
 rfc3986-validator 
@@ -297,7 +299,7 @@ ruamel-yaml-conda
 ruamel.yaml 
 s3fs 
 scikit-image 
-scikit-learn 
+scikit-learn==1.4.2
 scipy==1.11.4
 Scrapy 
 seaborn 
@@ -353,14 +355,14 @@ twisted-iocpsupport
 typer 
 typing_extensions 
 tzdata 
-tzlocal 
+tzlocal==5.3.1
 uc-micro-py 
 ujson 
 Unidecode 
 urllib3 
-validators 
+validators==0.35.0
 w3lib 
-watchdog 
+watchdog==6.0.0
 wcwidth 
 webencodings==0.5.1
 websocket-client 
