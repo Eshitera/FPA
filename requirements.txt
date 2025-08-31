@@ -1,4 +1,4 @@
-pip==25.*
+pip==25.2
 setuptools==70.*
 wheel==0.44.*
 aiobotocore 

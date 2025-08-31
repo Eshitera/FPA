@@ -1,3 +1,7 @@
+
+import os
+import subprocess
+import pip
 # app.py
 import streamlit as st
 import pandas as pd
