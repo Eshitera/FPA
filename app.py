@@ -9,6 +9,8 @@ import pickle
 from prophet.plot import plot_plotly
 import plotly.graph_objects as go
 import numpy as np
+from packaging import version
+
 
 # ==============================================================================
 # 1. STREAMLIT CONFIGURATION
@@ -123,7 +125,14 @@ segment_summary['cluster'] = segment_summary['cluster'].map({
     3: 'Newbies (Low Frequency)'
 })
 
-st.dataframe(segment_summary, use_container_width=True)
+#st.dataframe(segment_summary, use_container_width=True)
+
+
+
+def df_args():
+    return {"width": "stretch"} if version.parse(st._version_) >= version.parse("1.37.0") else {"use_container_width": True}
+
+st.dataframe(segment_summary, **df_args())
 
 # --- Revenue Forecast & Scenario Modeling ---
 st.header("3. Revenue Forecast & Scenario Modeling")
