@@ -130,7 +130,7 @@ segment_summary['cluster'] = segment_summary['cluster'].map({
 
 
 def df_args():
-    return {"width": "stretch"} if version.parse(st._version_) >= version.parse("1.37.0") else {"use_container_width": True}
+    return {"width": "stretch"} if version.parse(st.__version__) >= version.parse("1.37.0") else {"use_container_width": True}
 
 st.dataframe(segment_summary, **df_args())
 
